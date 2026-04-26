@@ -18,7 +18,7 @@ program ppm_coarray_buddhabrot
   integer(int64) :: num_samples ! Number of c points explored by each image
   integer(int32) :: k           ! Loop counter for the Mandelbrot sequence
   integer(int32), parameter :: iterations = 200   ! Maximum iterations
-  complex(wp), dimension(0:iterations) :: z     ! To memorize the sequence
+  complex(wp), dimension(0:iterations) :: z       ! To memorize the sequence
   real(wp)       :: rx, ry      ! Random numbers
   complex(wp)    :: c           ! A point in the complex plane
   real(wp)       :: xmin, xmax, ymin, ymax
@@ -32,7 +32,8 @@ program ppm_coarray_buddhabrot
 
   call random_init(repeatable=.true., image_distinct=.true.)
 
-  ! The computing window is -2 < x < +1 ; -1.5 < y < +1,5
+  ! The computing window is -2 < x < +1 ; -1.5 < y < +1.5
+  ! (this square contains the whole Mandelbrot set)
   xmin = -2._wp
   xmax = +1._wp
   ymin = -1.5_wp
@@ -50,20 +51,22 @@ program ppm_coarray_buddhabrot
       z(k) = z(k-1)**2 + c
     end do
 
-    ! The intensity of a pixel is proportional to the number of times this
-    ! pixel was visited.
-    ! We consider only sequences where c is not in the Mandelbrot set:
+    ! We consider only sequences starting from points not in the Mandelbrot set
+    ! (and therefore diverging):
     if (real(z(iterations))**2 + aimag(z(iterations))**2 >= 4._wp) then
       do k = 2, iterations
         ! Converting mathematical coordinates to pixel coordinates (ii,jj):
         ii = nint((real(z(k)) - xmin) / ((xmax-xmin) / pixwidth))
 
+        ! Is (ii, jj) inside the picture?
         if ((ii >= 0) .and. (ii < pixwidth)) then
           jj = nint((aimag(z(k)) - ymin) / ((ymax-ymin) / pixheight))
 
           if ((jj >= 0) .and. (jj < pixheight)) then
-            ! This pixel is inside the picture and has been visited by z:
+            ! This pixel has been visited by z:
             p(ii,jj) = p(ii,jj) + 1
+            ! The intensity of a pixel is proportional to the number of times
+            ! it was visited.
           end if
         end if
       end do
