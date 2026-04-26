@@ -80,8 +80,8 @@ program ppm_coarray_buddhabrot
 
   ! Like in astrophotography, we sum the pictures computed by each
   ! Fortran image to obtain a detailed picture of the Buddhabrot:
-  print '(A, I3, A)', "I am image", this_image(), " doing co_sum(p, 1)"
   sync all
+  print '(A, I3, A)', "I am image", this_image(), " doing co_sum(p, 1)"
   call co_sum(p, 1)
 
   if (this_image() == 1) then
