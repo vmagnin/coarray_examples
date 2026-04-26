@@ -1,6 +1,6 @@
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2026-04-25
-! Last modification: vmagnin 2026-04-25
+! Last modification: vmagnin 2026-04-26
 ! MIT license
 ! https://en.wikipedia.org/wiki/Buddhabrot
 !------------------------------------------------------------------------------
@@ -14,7 +14,8 @@ program ppm_coarray_buddhabrot
   integer(int16), parameter :: pixheight = 1000
   integer(int32) :: ii, jj      ! Pixel coordinates
   integer(int16) :: grey        ! Intensity of a pixel
-  integer(int64) :: i, max_iter ! Main loop
+  integer(int64) :: i           ! Main loop counter
+  integer(int64) :: num_samples ! Number of c points explored by each image
   integer(int32) :: k           ! Loop counter for the Mandelbrot sequence
   integer(int32), parameter :: iterations = 200   ! Maximum iterations
   complex(wp), dimension(0:iterations) :: z     ! To memorize the sequence
@@ -27,7 +28,7 @@ program ppm_coarray_buddhabrot
   p = 0
 
   ! We share the work among all images:
-  max_iter = 1250000000 / num_images()
+  num_samples = 1250000000 / num_images()
 
   call random_init(repeatable=.true., image_distinct=.true.)
 
@@ -37,7 +38,7 @@ program ppm_coarray_buddhabrot
   ymin = -1.5_wp
   ymax = +1.5_wp
 
-  computation: do i = 1, max_iter
+  computation: do i = 1, num_samples
     ! Starting from a random point c in the complex plane:
     call random_number(rx)
     call random_number(ry)
@@ -69,8 +70,8 @@ program ppm_coarray_buddhabrot
     end if
 
     ! Printing the percentage of work done:
-    if ((this_image() == 1) .and. (mod(i, max_iter/100) == 0)) then
-      write(*, '(i3, "%")') i / (max_iter/100)
+    if ((this_image() == 1) .and. (mod(i, num_samples/100) == 0)) then
+      write(*, '(i3, "%")') i / (num_samples/100)
     end if
   end do computation
 
