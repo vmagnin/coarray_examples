@@ -11,6 +11,8 @@ In the Buddhabrot, the intensity of a pixel is proportional to the number of tim
 
 Instead of partitioning the complex plane in several images, we have chose to simply use a Monte Carlo algorithm: each image is computing a lot of $z_n$ sequences using $c$ random complex values. At the end, all the results are summed using the `co_sum()` collective subroutine.
 
+You can modify the contrast by setting the multiplication `factor` parameter used in the grey level computation.
+
 ## Compiling and executing
 
 ### GFortran>=16.0

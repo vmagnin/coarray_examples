@@ -1,6 +1,6 @@
 !------------------------------------------------------------------------------
 ! Contributed by Vincent Magnin, 2026-04-25
-! Last modification: vmagnin 2026-04-26
+! Last modification: vmagnin 2026-04-27
 ! MIT license
 ! https://en.wikipedia.org/wiki/Buddhabrot
 !------------------------------------------------------------------------------
@@ -24,6 +24,10 @@ program ppm_coarray_buddhabrot
   real(wp)       :: xmin, xmax, ymin, ymax
   ! Array to count the visits of each pixel by the mathematical sequence:
   integer(int32), dimension(0:pixwidth-1, 0:pixheight-1) :: p
+  ! Maximum in the array:
+  real(wp)            :: highest
+  ! Multiplication factor used in the grey level computation:
+  real(wp), parameter :: factor = 3._wp
 
   p = 0
 
@@ -93,10 +97,11 @@ program ppm_coarray_buddhabrot
     write(u, '(a2)') "P6"
     write(u, '(i0," ",i0)') pixwidth, pixheight
     write(u, '(i0)') 255    ! maximum value for each RGB color
+    highest = real(maxval(p), kind=wp)
     ! Data (note that the Buddha is sitting! x is therefore the vertical axis):
     do ii = 0, pixwidth-1
       do jj = pixheight-1, 0, -1
-        grey = int(min(p(ii,jj), 255), kind=int16)
+        grey = min(255, nint((255*factor*p(ii,jj)) / highest, kind=int16))
         write(u, '(3a1)', advance='no') achar(grey), achar(grey), achar(grey)
       end do
     end do
