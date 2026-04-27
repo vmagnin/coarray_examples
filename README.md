@@ -13,6 +13,12 @@ Instead of partitioning the complex plane in several images, we have chose to si
 
 You can modify the contrast by setting the multiplication `factor` parameter used in the grey level computation.
 
+You can also study the Anti-Buddhabrot by reversing the modulus test:
+```fortran
+    if (real(z(iterations))**2 + aimag(z(iterations))**2 < 4._wp) then
+```
+to consider only $z_n$ sequences starting from points inside the Mandelbrot set.
+
 ## Compiling and executing
 
 ### GFortran>=16.0

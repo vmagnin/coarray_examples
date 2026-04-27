@@ -18,7 +18,7 @@ program ppm_coarray_buddhabrot
   integer(int64) :: num_samples ! Number of c points explored by each image
   integer(int32) :: k           ! Loop counter for the Mandelbrot sequence
   integer(int32), parameter :: iterations = 200   ! Maximum iterations
-  complex(wp), dimension(0:iterations) :: z       ! To memorize the sequence
+  complex(wp), dimension(0:iterations) :: z       ! To store the sequence
   real(wp)       :: rx, ry      ! Random numbers
   complex(wp)    :: c           ! A point in the complex plane
   real(wp)       :: xmin, xmax, ymin, ymax
@@ -31,7 +31,7 @@ program ppm_coarray_buddhabrot
 
   p = 0
 
-  ! We share the work among all images:
+  ! We share the work among all Fortran images:
   num_samples = 1250000000 / num_images()
 
   call random_init(repeatable=.true., image_distinct=.true.)
@@ -56,7 +56,8 @@ program ppm_coarray_buddhabrot
     end do
 
     ! We consider only sequences starting from points not in the Mandelbrot set
-    ! (and therefore diverging):
+    ! (and therefore diverging).
+    ! (You can also plot the Anti-Buddhabrot with < instead of >=)
     if (real(z(iterations))**2 + aimag(z(iterations))**2 >= 4._wp) then
       do k = 2, iterations
         ! Converting mathematical coordinates to pixel coordinates (ii,jj):
