@@ -28,6 +28,7 @@ program ppm_coarray_buddhabrot
   real(wp)            :: highest
   ! Multiplication factor used in the grey level computation:
   real(wp), parameter :: factor = 3._wp
+  ! For the Anti-Buddhabrot, that factor should be 5 times higher.
 
   p = 0
 
